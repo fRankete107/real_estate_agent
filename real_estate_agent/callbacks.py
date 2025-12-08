@@ -4,13 +4,13 @@ from google.adk.models.llm_request import LlmRequest
 custom_personality = None
 
 def set_personality(personality: str):
-    """Permite al usuario establecer una personalidad personalizada."""
+    """Allows the user to set a custom personality."""
     global custom_personality
     custom_personality = personality
 
 
 def before_model_callback(callback_context: CallbackContext, llm_request: LlmRequest):
-    """Se ejecuta antes de enviar el request al LLM."""
+    """Runs before sending the request to the LLM."""
     global custom_personality
 
     if custom_personality:
