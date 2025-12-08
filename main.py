@@ -3,6 +3,7 @@ from google.adk.runners import Runner
 from google.genai.types import Content, Part
 from dotenv import load_dotenv
 from real_estate_agent.agent import real_estate_agent
+from real_estate_agent.callbacks import set_personality
 import asyncio
 
 load_dotenv(override=True)
@@ -15,6 +16,9 @@ session_service = InMemorySessionService()
 
 asyncio.run(session_service.create_session(app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID))
 
+personality = input("Set your agent personality: ")
+set_personality(personality)
+
 runner = Runner(
     agent=real_estate_agent,
     app_name=APP_NAME,
@@ -22,8 +26,8 @@ runner = Runner(
 )
 
 while True:
-    user_msg = input("Tu: ")
-    if user_msg == "salir": 
+    user_msg = input("You: ")
+    if user_msg == "exit": 
         break
     content = Content(
         role="user", 
@@ -38,4 +42,4 @@ while True:
     for event in events:
         if event.is_final_response() and event.content:
            response = event.content.parts[0].text
-           print("Agente: " + response)
+           print("Agent: " + response)
