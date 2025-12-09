@@ -6,7 +6,7 @@ from .callbacks import before_model_callback
 
 
 real_estate_agent = Agent(
-    name="real_state_agent",
+    name="real_estate_agent",
     model="gemini-2.0-flash",
     description="real estate agent that qualifies leads using the BANT criteria in a few steps.",
     instruction=agent_prompt,
