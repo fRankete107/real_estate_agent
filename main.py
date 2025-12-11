@@ -3,26 +3,31 @@ from google.adk.runners import Runner
 from google.genai.types import Content, Part
 from dotenv import load_dotenv
 from real_estate_agent.agent import real_estate_agent
-from real_estate_agent.callbacks import set_personality
 import asyncio
 
 load_dotenv(override=True)
 
 APP_NAME="real_estate_agent"
-USER_ID="user_1"
-SESSION_ID="session_1"
+
+# Simulates WhatsApp number (in production comes from the webhook)
+PHONE_NUMBER= input("Phone number (simulated): ")
+# Phone = user_id = i
+USER_ID=PHONE_NUMBER
+SESSION_ID=PHONE_NUMBER # same number to keep context
 
 session_service = InMemorySessionService()
 
-asyncio.run(session_service.create_session(app_name=APP_NAME, user_id=USER_ID, session_id=SESSION_ID))
-
-personality = input("Set your agent personality: ")
-set_personality(personality)
+asyncio.run(session_service.create_session(
+    app_name=APP_NAME, 
+    user_id=USER_ID, 
+    session_id=SESSION_ID,
+    state={"user_id": PHONE_NUMBER} # Save in state for the callback
+    ))
 
 runner = Runner(
     agent=real_estate_agent,
     app_name=APP_NAME,
-    session_service=session_service
+    session_service=session_service,
 )
 
 while True:
