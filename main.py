@@ -4,6 +4,7 @@ from google.genai.types import Content, Part
 from dotenv import load_dotenv
 from real_estate_agent.agent import real_estate_agent
 import asyncio
+import json
 
 load_dotenv(override=True)
 
@@ -46,5 +47,21 @@ while True:
 
     for event in events:
         if event.is_final_response() and event.content:
-           response = event.content.parts[0].text
-           print("Agent: " + response)
+            response_text = event.content.parts[0].text
+            
+            clean_text = response_text.replace("```json", "").replace("```", "").strip()
+
+            # Parsear JSON
+            try:
+                response_data = json.loads(clean_text)
+                message = response_data.get("message", response_text)
+                should_escalate = response_data.get("should_escalate", False)
+                
+                print("Agent: " + message)
+                
+                if should_escalate:
+                    print("⚠️ ESCALANDO A HUMANO...")
+                    
+            except json.JSONDecodeError:
+                # Si no es JSON válido, mostrar tal cual
+                print("Agent: " + response_text)
