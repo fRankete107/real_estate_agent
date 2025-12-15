@@ -38,7 +38,7 @@ def get_contact_context(phone_number: str = None) -> dict:
     
 def get_location_context() -> dict:
     """
-    Detecta la ubicación del usuario.
+    Detects user location.
     """
     result = detect_location()
     
