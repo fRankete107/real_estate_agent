@@ -1,4 +1,4 @@
-# Servicio para ejecutar el agente y procesar respuestas
+# Service to run the agent and process responses
 
 import json
 from google.adk.sessions import InMemorySessionService
@@ -9,7 +9,7 @@ from models.payloads import AgentResponse
 
 APP_NAME = "real_estate_agent"
 
-# Servicios (en producción es con persistencia real)
+# Services (in production this uses real persistence)
 session_service = InMemorySessionService()
 
 runner = Runner(
@@ -21,8 +21,8 @@ runner = Runner(
 
 async def get_or_create_session(phone_number: str):
     """
-    Obtiene o crea una sesión para el número de teléfono.
-    Mantiene el contexto de la conversación.
+    Gets or creates a session for the phone number.
+    Maintains the conversation context.
     """
     try:
         session = await session_service.get_session(
@@ -50,8 +50,8 @@ async def get_or_create_session(phone_number: str):
 
 def parse_agent_response(response_text: str) -> AgentResponse:
     """
-    Parsea la respuesta JSON del agente.
-    Limpia backticks de markdown si existen.
+    Parses the agent's JSON response.
+    Cleans markdown backticks if they exist.
     """
     clean_text = response_text.replace("```json", "").replace("```", "").strip()
     
@@ -70,37 +70,39 @@ def parse_agent_response(response_text: str) -> AgentResponse:
 
 async def process_message(phone_number: str, message_text: str) -> AgentResponse:
     """
-    Procesa un mensaje del usuario con el agente.
-    
+    Processes a user message with the agent.
+
     Args:
-    phone_number: Número de teléfono del usuario
-    message_text: Texto del mensaje
-        
+        phone_number: User's phone number
+        message_text: Message text
+
     Returns:
-        AgentResponse con message y should_escalate
+        AgentResponse with message and should_escalate
     """
-    # Obtener o crear sesion
+    # Get or create session
     await get_or_create_session(phone_number)
     
-    # Preparar mensaje para el agente
+    # Prepare message for the agent
     content = Content(
         role="user",
         parts=[Part(text=message_text)]
     )
     
-    # Ejecutar el agente
+    # Run the agent
     events = runner.run(
         user_id=phone_number,
         session_id=phone_number,
         new_message=content
     )
-    # Obtener final response
+    
+    # Get final response
     for event in events:
         if event.is_final_response() and event.content:
             response_text = event.content.parts[0].text
             return parse_agent_response(response_text)
-    # Si no hubo respuesta:
+    
+    # If there was no response
     return AgentResponse(
-        message="Lo siento, no pude procesar tu mensaje. ¿Podrías intentar de nuevo?",
+        message="Sorry, I couldn't process your message. Could you please try again?",
         should_escalate=False
     )
