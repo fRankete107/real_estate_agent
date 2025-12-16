@@ -1,4 +1,4 @@
-# Servicio para comunicación con WhatsApp via SpicyTool API
+# Service for communication with WhatsApp via the SpicyTool API
 
 import os
 import httpx
@@ -6,15 +6,13 @@ from dotenv import load_dotenv
 
 load_dotenv(override=True)
 
-# Variables de entorno
+# env variables
 SPICYTOOL_API_URL = os.getenv("SPICYTOOL_API_URL", "https://api.spicytool.net/api/webhooks/whatsApp/sendMessage")
 SPICY_API_TOKEN = os.getenv("SPICY_API_TOKEN")
 
 
 async def send_whatsapp_message(user_email: str, conversation_id: str, message: str) -> dict:
-    """
-    Envía un mensaje a WhatsApp a través de la API de SpicyTool.
-    """
+    """Sends a message to WhatsApp through the SpicyTool API."""
     payload = {
         "userEmail": user_email,
         "conversationId": conversation_id,
@@ -54,7 +52,7 @@ async def send_whatsapp_message(user_email: str, conversation_id: str, message: 
 
 
 def validate_config() -> bool:
-    """Valida que las variables de entorno estén configuradas."""
+    """Validates that the environment variables are configured."""
     if not SPICY_API_TOKEN:
         print("⚠️ WARNING: SPICY_API_TOKEN not set in .env")
         return False
